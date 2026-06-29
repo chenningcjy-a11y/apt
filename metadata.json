@@ -1,0 +1,6 @@
+{
+  "name": "APT. Gift",
+  "description": "A special musical gift featuring APT. by ROSÉ & Bruno Mars.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
