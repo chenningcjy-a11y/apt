@@ -6,7 +6,7 @@ export default function App() {
   const [stage, setStage] = useState<'prompt' | 'playing'>('prompt');
   const [songData, setSongData] = useState<{ cover: string; audio: string } | null>({
     cover: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/2d/1a/7d/2d1a7d91-587e-0ceb-d434-327bd66d9e86/075679628312.jpg/1024x1024bb.jpg',
-    audio: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/22/8a/a1/228aa1a0-cbfd-ac14-ae99-09ca59bcc80b/mzaf_12121445588963961343.plus.aac.p.m4a'
+    audio: '/apt.mp3'
   });
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
