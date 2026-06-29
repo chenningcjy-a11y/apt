@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Gift, Play, Pause } from 'lucide-react';
+import { Gift, Play, Pause, Layers } from 'lucide-react';
 
 export default function App() {
   const [stage, setStage] = useState<'prompt' | 'playing'>('prompt');
@@ -9,6 +9,7 @@ export default function App() {
     audio: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/22/8a/a1/228aa1a0-cbfd-ac14-ae99-09ca59bcc80b/mzaf_12121445588963961343.plus.aac.p.m4a'
   });
   const [isPlaying, setIsPlaying] = useState(false);
+  const [uiMode, setUiMode] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const surpriseAudiosRef = useRef<HTMLAudioElement[]>([]);
 
@@ -148,53 +149,194 @@ export default function App() {
               </div>
             </motion.div>
 
-            {/* Main Content inside Frosted Glass Panel */}
-            <div className="relative z-10 flex flex-col items-center w-[90%] sm:w-[80%] max-w-[500px] px-6 py-10 md:p-12 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl md:rounded-[40px] shadow-[0_32px_64px_rgba(0,0,0,0.5)] mx-4 text-center">
-              <motion.div
-                initial={{ y: 30, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 1, ease: 'easeOut' }}
-                className="w-full flex flex-col items-center"
-              >
-                {/* Vinyl Record / CD effect */}
-                <div 
-                  className={`relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 mb-8 md:mb-10 rounded-full overflow-hidden border-4 border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-transform duration-1000 ${isPlaying ? 'animate-[spin_12s_linear_infinite]' : ''}`}
+            {/* UI Switch Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setUiMode((prev) => (prev + 1) % 5);
+              }}
+              className="absolute bottom-6 right-6 md:bottom-12 md:right-12 z-50 flex items-center justify-center p-4 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-400 hover:to-pink-400 border-2 border-white/30 rounded-full text-white font-bold shadow-[0_0_20px_rgba(244,63,94,0.6)] hover:shadow-[0_0_40px_rgba(244,63,94,0.8)] transition-all active:scale-95"
+              aria-label="Switch UI Mode"
+            >
+              <Layers className="w-6 h-6 md:w-8 md:h-8 animate-pulse" />
+            </button>
+
+            {/* Main Content Areas */}
+            <AnimatePresence mode="wait">
+              {uiMode === 0 && (
+                <motion.div
+                  key="ui0"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: 0.5 }}
+                  className="relative z-10 flex flex-col items-center w-[90%] sm:w-[80%] max-w-[500px] px-6 py-10 md:p-12 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl md:rounded-[40px] shadow-[0_32px_64px_rgba(0,0,0,0.5)] mx-4 text-center"
                 >
-                  {songData?.cover ? (
-                    <img src={songData.cover} alt="APT. Cover" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-rose-900/50 flex items-center justify-center backdrop-blur-md">
-                      <span className="text-white/50 text-sm">Loading Cover...</span>
+                  <motion.div
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
+                    className="w-full flex flex-col items-center"
+                  >
+                    {/* Vinyl Record / CD effect */}
+                    <div 
+                      className={`relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 mb-8 md:mb-10 rounded-full overflow-hidden border-4 border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-transform duration-1000 ${isPlaying ? 'animate-[spin_12s_linear_infinite]' : ''}`}
+                    >
+                      {songData?.cover ? (
+                        <img src={songData.cover} alt="APT. Cover" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-rose-900/50 flex items-center justify-center backdrop-blur-md">
+                          <span className="text-white/50 text-sm">Loading Cover...</span>
+                        </div>
+                      )}
+                      {/* CD center hole */}
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 sm:w-16 sm:h-16 bg-black/80 rounded-full border-2 border-white/10 shadow-inner flex items-center justify-center backdrop-blur-sm">
+                        <div className="w-3 h-3 sm:w-4 sm:h-4 bg-white/20 rounded-full" />
+                      </div>
+                      {/* Glossy reflection */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 pointer-events-none" />
                     </div>
-                  )}
-                  {/* CD center hole */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 sm:w-16 sm:h-16 bg-black/80 rounded-full border-2 border-white/10 shadow-inner flex items-center justify-center backdrop-blur-sm">
-                    <div className="w-3 h-3 sm:w-4 sm:h-4 bg-white/20 rounded-full" />
-                  </div>
-                  {/* Glossy reflection */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 pointer-events-none" />
-                </div>
 
-                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black mb-2 md:mb-3 text-white tracking-tighter drop-shadow-lg">
-                  APT.
-                </h2>
-                <p className="text-lg sm:text-xl md:text-2xl text-rose-400 font-bold tracking-wide mb-8 md:mb-12">
-                  ROSÉ & Bruno Mars
-                </p>
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-black mb-2 md:mb-3 text-white tracking-tighter drop-shadow-lg">
+                      APT.
+                    </h2>
+                    <p className="text-lg sm:text-xl md:text-2xl text-rose-400 font-bold tracking-wide mb-8 md:mb-12">
+                      ROSÉ & Bruno Mars
+                    </p>
 
-                <button
-                  onClick={togglePlay}
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform"
-                  aria-label={isPlaying ? 'Pause' : 'Play'}
+                    <button
+                      onClick={togglePlay}
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform"
+                      aria-label={isPlaying ? 'Pause' : 'Play'}
+                    >
+                      {isPlaying ? (
+                        <Pause className="w-6 h-6 sm:w-8 sm:h-8 fill-current" />
+                      ) : (
+                        <Play className="w-6 h-6 sm:w-8 sm:h-8 fill-current ml-0.5 sm:ml-1" />
+                      )}
+                    </button>
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {uiMode === 1 && (
+                <motion.div
+                  key="ui1"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -50 }}
+                  transition={{ duration: 0.5 }}
+                  className="relative z-10 flex flex-col w-[85%] sm:w-[70%] max-w-[400px] bg-white/95 backdrop-blur-3xl rounded-[32px] shadow-[0_32px_64px_rgba(0,0,0,0.6)] overflow-hidden text-black mx-4"
                 >
-                  {isPlaying ? (
-                    <Pause className="w-6 h-6 sm:w-8 sm:h-8 fill-current" />
-                  ) : (
-                    <Play className="w-6 h-6 sm:w-8 sm:h-8 fill-current ml-0.5 sm:ml-1" />
-                  )}
-                </button>
-              </motion.div>
-            </div>
+                  <div className="w-full aspect-square relative shadow-inner bg-rose-200">
+                    {songData?.cover && <img src={songData.cover} alt="Cover" className="w-full h-full object-cover" />}
+                  </div>
+                  <div className="p-8 sm:p-10 flex flex-col items-center">
+                    <h2 className="text-3xl sm:text-4xl font-black mb-1 tracking-tight text-zinc-900">APT.</h2>
+                    <p className="text-zinc-500 font-bold mb-8">ROSÉ & Bruno Mars</p>
+                    
+                    <button
+                      onClick={togglePlay}
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-transform"
+                    >
+                      {isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {uiMode === 2 && (
+                <motion.div
+                  key="ui2"
+                  initial={{ opacity: 0, filter: 'blur(20px)' }}
+                  animate={{ opacity: 1, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, filter: 'blur(20px)' }}
+                  transition={{ duration: 0.5 }}
+                  className="relative z-10 flex flex-col md:flex-row items-center justify-center w-full h-full px-6 gap-8 md:gap-16 text-center md:text-left"
+                >
+                  <div className="w-48 h-48 sm:w-64 sm:h-64 md:w-[400px] md:h-[400px] rounded-2xl md:rounded-[40px] shadow-2xl overflow-hidden border border-white/20 flex-shrink-0">
+                    {songData?.cover && <img src={songData.cover} alt="Cover" className="w-full h-full object-cover" />}
+                  </div>
+                  <div className="flex flex-col items-center md:items-start max-w-lg">
+                    <h2 className="text-6xl sm:text-7xl md:text-8xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 tracking-tighter drop-shadow-sm">APT.</h2>
+                    <p className="text-xl sm:text-2xl md:text-3xl text-rose-300 font-bold mb-10 drop-shadow-sm">ROSÉ & Bruno Mars</p>
+                    <button
+                      onClick={togglePlay}
+                      className="group flex items-center gap-4 px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 transition-all active:scale-95 shadow-lg"
+                    >
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white text-black flex items-center justify-center">
+                        {isPlaying ? <Pause className="w-5 h-5 md:w-6 md:h-6 fill-current" /> : <Play className="w-5 h-5 md:w-6 md:h-6 fill-current ml-0.5" />}
+                      </div>
+                      <span className="text-white font-bold text-lg md:text-xl tracking-wider">{isPlaying ? 'PAUSE' : 'PLAY'}</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {uiMode === 3 && (
+                <motion.div
+                  key="ui3"
+                  initial={{ opacity: 0, rotateY: 90 }}
+                  animate={{ opacity: 1, rotateY: 0 }}
+                  exit={{ opacity: 0, rotateY: -90 }}
+                  transition={{ duration: 0.6 }}
+                  className="relative z-10 w-[90%] sm:w-[80%] max-w-[400px] bg-black border-[6px] border-rose-500 p-8 shadow-[16px_16px_0px_rgba(244,63,94,1)] text-rose-500 font-mono mx-4"
+                >
+                  <div className="flex justify-between items-end border-b-4 border-rose-500 pb-4 mb-8">
+                    <div>
+                      <h2 className="text-4xl font-black uppercase tracking-widest text-rose-500">APT.</h2>
+                      <p className="text-xs font-bold tracking-widest mt-2 text-rose-500">ROSÉ & BRUNO</p>
+                    </div>
+                    <div className="text-[10px] sm:text-xs">SYS_01 // ACTIVE</div>
+                  </div>
+                  <div className="w-full aspect-square border-4 border-rose-500 relative overflow-hidden mb-8 grayscale contrast-150 mix-blend-screen bg-rose-900/30">
+                    {songData?.cover && <img src={songData.cover} alt="Cover" className="w-full h-full object-cover opacity-80" />}
+                    {/* Scanline effect */}
+                    <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.5)_50%)] bg-[length:100%_4px] pointer-events-none z-10" />
+                  </div>
+                  <button
+                    onClick={togglePlay}
+                    className="w-full py-4 bg-rose-500 text-black font-black text-2xl tracking-widest hover:bg-rose-400 active:translate-y-2 transition-all flex justify-center items-center gap-4 border-b-[6px] border-rose-700 active:border-b-0"
+                  >
+                    {isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current" />}
+                    {isPlaying ? 'PAUSE' : 'PLAY'}
+                  </button>
+                </motion.div>
+              )}
+
+              {uiMode === 4 && (
+                <motion.div
+                  key="ui4"
+                  initial={{ opacity: 0, scale: 1.2 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.7 }}
+                  className="relative z-10 w-full h-full flex flex-col items-center justify-end pb-32 md:pb-40 px-6"
+                >
+                  <div className="w-full max-w-md flex flex-col items-center">
+                    <div className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden mb-8 md:mb-12 border border-white/10">
+                      {songData?.cover && <img src={songData.cover} alt="Cover" className="w-full h-full object-cover" />}
+                    </div>
+                    <div className="w-full flex justify-between items-end mb-8 px-4">
+                      <div className="flex flex-col text-left">
+                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-1 drop-shadow-md">APT.</h2>
+                        <p className="text-white/70 font-medium text-lg md:text-xl drop-shadow-md">ROSÉ & Bruno Mars</p>
+                      </div>
+                      <button
+                        onClick={togglePlay}
+                        className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-rose-500 text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shadow-[0_10px_30px_rgba(244,63,94,0.5)]"
+                      >
+                        {isPlaying ? <Pause className="w-8 h-8 md:w-10 md:h-10 fill-current" /> : <Play className="w-8 h-8 md:w-10 md:h-10 fill-current ml-1 md:ml-2" />}
+                      </button>
+                    </div>
+                    {/* Fake Progress Bar */}
+                    <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden mx-4">
+                      <div className={`h-full bg-white transition-all duration-1000 ${isPlaying ? 'w-1/3' : 'w-0'}`} />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
           </motion.div>
         )}
